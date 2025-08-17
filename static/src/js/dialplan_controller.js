@@ -1,48 +1,76 @@
 /** @odoo-module */
 
-import { Layout } from "@web/search/layout";
 import { useService } from "@web/core/utils/hooks";
 import { Component, onWillStart, onWillUpdateProps, useState } from "@odoo/owl";
 
 export class DialplanController extends Component {
+    static template = "freeswitch_cti.DialplanView";
+
     setup() {
+
+        super.setup(); // Add this if extending another component
+
         this.orm = useService("orm");
         this.action = useService("action");
-        this.dialog = useService("dialog");
+        this.notification = useService("notification");
         this.rpc = useService("rpc");
 
         const { Model, resModel, fields, archInfo, domain, context } = this.props;
         this.model = useState(new Model(this.rpc, resModel, fields, archInfo, domain, context));
 
-        // Owl 2: expose component via set-ref
-        this.setRenderer = (comp) => {
-            this.renderer = comp;
-            setTimeout(() => {
-                comp.initializeFlow();  // zamiast on_attach_callback
-            });
-        };
-
         onWillStart(async () => {
-            await this.model.load({ res_id: this.props.resId });
+            try {
+                await this.model.load({ res_id: this.props.resId });
+            } catch (error) {
+                this.notification.add("Failed to load dialplan", {
+                    type: "danger",
+                    title: "Error",
+                });
+            }
         });
 
         onWillUpdateProps(async (nextProps) => {
-            if (nextProps && nextProps.resId && nextProps.resId !== this.props.resId) {
-                await this.model.reload({ currentId: nextProps.resId });
+            if (nextProps?.resId !== this.props.resId) {
+                try {
+                    await this.model.reload({ currentId: nextProps.resId });
+                } catch (error) {
+                    this.notification.add("Failed to reload dialplan", {
+                        type: "danger",
+                        title: "Error",
+                    });
+                }
             }
         });
     }
 
-    onSave() {
-        const data = this.renderer?.flowchartToState?.();
-        if (data) this.model.save(data);
+    async onSave() {
+        try {
+            if (this.renderer) {
+                const data = this.renderer.flowchartToState();
+                const success = await this.model.save(data);
+                if (success) {
+                    this.notification.add("Dialplan saved successfully", {
+                        type: "success",
+                        title: "Success",
+                    });
+                }
+            }
+        } catch (error) {
+            this.notification.add("Failed to save dialplan", {
+                type: "danger",
+                title: "Error",
+            });
+        }
     }
 
     onCancel() {
-        const state = this.model.get();
-        this.renderer?.stateToFlowchart?.(state);
+        if (this.renderer) {
+            const state = this.model.get();
+            this.renderer.stateToFlowchart(state);
+            this.notification.add("Changes discarded", {
+                type: "warning",
+                title: "Warning",
+            });
+        }
     }
 }
-
-DialplanController.template = "freeswitch_cti.DialplanView";
-DialplanController.components = { Layout };
