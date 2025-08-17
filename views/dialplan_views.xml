@@ -1,0 +1,9 @@
+<templates xml:space="preserve">
+    <t t-name="freeswitch_cti.DialplanView" owl="1">
+        <!-- Your template content -->
+    </t>
+
+    <t t-name="freeswitch_cti.DialplanRenderer" owl="1">
+        <!-- Your template content -->
+    </t>
+</templates>

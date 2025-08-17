@@ -1,36 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
 
-  <t t-name="node_static_template">
-    <div class="o_flow_panel_card">
-      <div class="o_flow_panel_card_title">
-        Node Type
+  <t t-name="freeswitch_cti.DialplanView" owl="1">
+    <div class="o_dialplan_view">
+      <div class="o_control_panel">
+        <div class="o_cp_right">
+          <button type="button" class="btn btn-primary" t-on-click="onSave">
+            Save
+          </button>
+          <button type="button" class="btn btn-secondary" t-on-click="onCancel">
+            Discard
+          </button>
+        </div>
       </div>
-      <div class="o_flow_panel_card_body">
-        <t t-esc="widget.node.node_type"/>
-      </div>
-    </div>
-    <div class="o_flow_panel_card">
-      <div class="o_flow_panel_card_title">
-        Node ID
-      </div>
-      <div class="o_flow_panel_card_body">
-        <t t-esc="widget.node.node_id"/>
-      </div>
+      <t t-component="props.Renderer" model="model" set-renderer="props.setRenderer"/>
     </div>
   </t>
 
-  <t t-name="DialplanView.buttons">
-    <div class="o_flow_buttons_edit" role="toolbar" aria-label="Main actions">
-      <button type="button"
-              class="btn btn-primary o_flow_button_save" accesskey="s">
-        Save
-      </button>
-      <button type="button"
-              class="btn btn-secondary o_flow_button_cancel" accesskey="j">
-        Discard
-      </button>
-    </div>
+  <t t-name="freeswitch_cti.DialplanRenderer">
+    <div t-ref="root" class="o_dialplan_renderer"/>
   </t>
 
 </templates>

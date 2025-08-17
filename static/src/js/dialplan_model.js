@@ -11,65 +11,96 @@ export class DialplanModel {
         this.domain = domain || [];
         this.context = context || {};
         this.keepLast = new KeepLast();
-        this.res_id = null;
-        this.nodes = [];
-        this.events = [];
-        this.dialplan = null;
+        this.resId = null;
+        this.data = {
+            nodes: [],
+            links: []
+        };
     }
 
     async load(params = {}) {
-        if (params.res_id) {
-            this.res_id = params.res_id;
-        } else if (this.context?.active_id) {
-            this.res_id = this.context.active_id;
-        } else if (params.currentId) {
-            this.res_id = params.currentId;
+        try {
+            this.resId = params.res_id || this.context.active_id;
+            if (!this.resId) {
+                this._setEmptyState();
+                return;
+            }
+
+            const result = await this.keepLast.add(
+                this.rpc("/freeswitch_cti/dialplan/get_info", {
+                    id: this.resId
+                }).catch(() => {
+                    return {nodes: [], events: [], dialplan: null};
+                })
+            );
+
+            this.data = this.normalizeData(result);
+        } catch (error) {
+            console.error("Failed to load dialplan data:", error);
+            this._setEmptyState();
         }
-
-        if (!this.res_id) return;
-        await this._fetchInfo();
-    }
-
-    async reload(params = {}) {
-        if (params.currentId) {
-            this.res_id = params.currentId;
-        }
-        await this._fetchInfo();
-    }
-
-    get() {
-        return JSON.parse(JSON.stringify({
-            res_id: this.res_id,
-            dialplan: this.dialplan,
-            nodes: this.nodes,
-            events: this.events,
-        }));
     }
 
     async save(data) {
-        await this._updateInfo(data);
+        try {
+            const result = await this.keepLast.add(
+                this.rpc("/freeswitch_cti/dialplan/update_info", {
+                    id: this.resId,
+                    nodes: data.nodes,
+                    events: this.convertLinksToEvents(data.links)
+                })
+            );
+
+            this.data = this.normalizeData(result);
+            return true;
+        } catch (error) {
+            console.error("Failed to save dialplan data:", error);
+            throw error;
+        }
     }
 
-    async _fetchInfo() {
-        const res = await this.keepLast.add(this.rpc({
-            route: "/freeswitch_cti/dialplan/get_info",
-            params: { id: this.res_id },
-        }));
-        this.nodes = res.nodes || [];
-        this.dialplan = res.dialplan || null;
-        this.events = res.events || [];
+    get() {
+        return JSON.parse(JSON.stringify(this.data));
     }
 
-    async _updateInfo(data) {
-        const res = await this.keepLast.add(this.rpc({
-            route: "/freeswitch_cti/dialplan/update_info",
-            params: {
-                id: this.res_id,
-                nodes: data.nodes,
-                events: data.events,
-            },
-        }));
-        this.nodes = res.nodes || [];
-        this.events = res.events || [];
+    normalizeData(result) {
+        return {
+            nodes: (result.nodes || []).map(node => ({
+                id: String(node.id),
+                type: node.node_type || 'Untitled',
+                x: Number(node.display_left || 50),
+                y: Number(node.display_top || 50),
+                properties: {
+                    title: node.name || node.node_type || 'Untitled',
+                    node_param: node.node_param || '',
+                    node_timeout: node.node_timeout || 0
+                }
+            })),
+            links: this.convertEventsToLinks(result.events || [])
+        };
+    }
+
+    convertEventsToLinks(events) {
+        return events.map(event => ({
+            from: String(event.node_id),
+            to: String(event.next_node),
+            fromConnector: event.name || 'output_1',
+            toConnector: 'input_1'
+        })).filter(link => link.from && link.to);
+    }
+
+    convertLinksToEvents(links) {
+        return links.map(link => ({
+            node_id: String(link.from),
+            next_node: String(link.to),
+            name: link.fromConnector || 'output_1'
+        })).filter(event => event.node_id && event.next_node);
+    }
+
+    _setEmptyState() {
+        this.data = {
+            nodes: [],
+            links: []
+        };
     }
 }

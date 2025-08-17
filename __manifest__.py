@@ -14,6 +14,7 @@
         'security/security.xml',
         'security/ir.model.access.csv',
         'views/views.xml',
+        'views/dialplan_views.xml',
         'data/dialplan.xml',
         'data/freeswitch.xml'
     ],
@@ -22,10 +23,11 @@
             'odoo_freeswitch_cti/static/src/xml/*.xml'
         ],
         'web.assets_backend': [
+            'odoo_freeswitch_cti/static/lib/js/jquery_ui/jquery_ui_14.js',
 
-         'odoo_freeswitch_cti/static/src/xml/dialplan.xml',
-        'odoo_freeswitch_cti/static/src/xml/dialplan_panel.xml',
-"odoo_freeswitch_cti/static/src/xml/dialplan_view_layout.xml",
+        # 'odoo_freeswitch_cti/static/src/xml/dialplan.xml',
+      #  'odoo_freeswitch_cti/static/src/xml/dialplan_panel.xml',
+#"odoo_freeswitch_cti/static/src/xml/dialplan_view_layout.xml",
 
             'odoo_freeswitch_cti/static/src/scss/dialplan_view.scss',
             

@@ -1,6 +1,6 @@
 <odoo>
   <data>
-    
+
     <record id="sip_view_users_form" model="ir.ui.view">
       <field name="name">sip.res.users.form</field>
       <field name="model">res.users</field>
@@ -14,7 +14,7 @@
               </group>
               <group>
                 <field name="sip_password" />
-              </group>            
+              </group>
             </group>
           </page>
         </xpath>
@@ -34,7 +34,7 @@
               </group>
               <group>
                 <field name="sip_password" />
-              </group>            
+              </group>
             </group>
           </page>
         </xpath>
@@ -50,14 +50,14 @@
       <field name="binding_view_types">form</field>
       <field name="state">code</field>
       <field name="code">
-if records:  
+if records:
  action = {
    "type": "ir.actions.act_window",
    "name": "Dialplan Graph",
    "view_mode": "dialplan",
    "res_model": "freeswitch_cti.dialplan_extension",
    "res_id": records[0].id,
- }        
+ }
       </field>
     </record>
 
@@ -110,7 +110,7 @@ if records:
                 <field name="is_continue" />
                 <field name="priority"/>
                 <field name="is_active"/>
-              </group>              
+              </group>
             </group>
             <notebook>
               <page string="Nodes">
@@ -169,7 +169,7 @@ if records:
         </tree>
       </field>
     </record>
-    
+
     <record id="supervisor_view_tree" model="ir.ui.view">
       <field name="name">freeswitch_cti.supervisor.view.tree</field>
       <field name="model">res.users</field>
@@ -201,8 +201,8 @@ if records:
     </record>
 
     <!-- Form view -->
-    <record id="view_open_view_callcenter_queue_form" model="ir.ui.view"> 
-      <field name="name">freeswitch_cti.callcenter_queue.form</field>  
+    <record id="view_open_view_callcenter_queue_form" model="ir.ui.view">
+      <field name="name">freeswitch_cti.callcenter_queue.form</field>
       <field name="model">freeswitch_cti.callcenter_queue</field>
       <field eval="18" name="priority"/>
       <field name="arch" type="xml">
@@ -217,20 +217,20 @@ if records:
                 <field name="moh_sound" />
                 <field name="record_template" />
                 <field name="time_base_score" />
-                
+
                 <field name="tier_rules_apply" />
                 <field name="tier_rule_wait_second" />
 
                 <field name="tier_rule_wait_multiple_level" />
-                
+
                 <field name="tier_rule_no_agent_no_wait" />
 
                 <field name="discard_abandoned_after" />
-                
+
                 <field name="abandoned_resume_allowed" />
                 <field name="max_wait_time" />
                 <field name="max_wait_time_with_no_agent" />
-                
+
                 <field name="max_wait_time_with_no_agent_time_reached" />
                 <field name="ring_progressively_delay" />
 
@@ -263,7 +263,7 @@ if records:
                   </tree>
                 </field>
               </page>
-              
+
               <page string="Queue Customers">
                 <field name="queue_customers">
                   <tree>
@@ -277,8 +277,8 @@ if records:
       </field>
     </record>
 
-    <record id="view_open_view_cti_event_form" model="ir.ui.view"> 
-      <field name="name">freeswitch_cti.cti_event.form</field>  
+    <record id="view_open_view_cti_event_form" model="ir.ui.view">
+      <field name="name">freeswitch_cti.cti_event.form</field>
       <field name="model">freeswitch_cti.cti_event</field>
       <field eval="18" name="priority"/>
       <field name="arch" type="xml">
@@ -292,7 +292,7 @@ if records:
                 <field name="content_type" />
                 <field name="content_length" />
               </group>
-              <group>                
+              <group>
                 <field name="command_id" />
                 <field name="command_name" />
                 <field name="sip_number" />
@@ -331,7 +331,7 @@ if records:
           <field name="status"/>
           <field name="result"/>
           <field name="execute_time"/>
-          <field name="confirm_time"/>          
+          <field name="confirm_time"/>
         </tree>
       </field>
     </record>
@@ -349,12 +349,12 @@ if records:
           <field name="content_length"/>
           <field name="content_content"/>
           <field name="event_content"/>
-          <field name="create_date"/>          
+          <field name="create_date"/>
         </tree>
       </field>
     </record>
 
-    
+
     <record id="open_view_callcenter_queue_list" model="ir.actions.act_window">
       <field name="name">Queues</field>
       <field name="res_model">freeswitch_cti.callcenter_queue</field>
@@ -391,7 +391,7 @@ if records:
         name="CallCenter"
         web_icon="freeswitch_cti/static/description/icon.png"
         sequence="75"/>
-    
+
     <menuitem
         id="menu_all_agents"
         name="All Agents"
